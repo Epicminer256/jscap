@@ -5,6 +5,8 @@ function main(){
     var video = document.createElement('video');
     video.muted = true;
     
+    video.id = "video"
+
     window.videoSettings = new videoProperties();
     window.mShortcuts = new mouseShortcuts(video);
     window.cap2vid = new capturecard2Video(video, videoSettings)
