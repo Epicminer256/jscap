@@ -5,10 +5,10 @@ function main(){
     var video = document.createElement('video');
     video.muted = true;
     
-    const videoSettings = new videoProperties();
-    const mShortcuts = new mouseShortcuts(video);
-    const cap2vid = new capturecard2Video(video, videoSettings)
-    const sidebar = new capturecard2VideoSidebar(cap2vid)
+    window.videoSettings = new videoProperties();
+    window.mShortcuts = new mouseShortcuts(video);
+    window.cap2vid = new capturecard2Video(video, videoSettings)
+    window.sidebar = new capturecard2VideoSidebar(cap2vid)
 
     document.body.addEventListener('mousedown', (e) => {
         mShortcuts.clicked(e, mShortcuts)
