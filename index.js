@@ -122,11 +122,14 @@ class capturecard2VideoSidebar{
         }
         this.fpsElement.value = this.cap2vid.videoProperties.fps;
         this.videobottom.appendChild(this.fpsElement)
-        
+        this.videobottom.id = "videobottom"
 
         this.settingbar = document.createElement('div');
+        this.settingbar.id = "settingbar"
         this.hoverbar = document.createElement('div');
+        this.hoverbar.id = "hoverbar"
         this.devices = document.createElement('div');
+        this.devices.id = "devices"
         this.buttons = document.createElement('div');
        
         this.helpElement = document.createElement('button');
