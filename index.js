@@ -8,43 +8,12 @@ function main(){
     const videoSettings = new videoProperties();
     const mShortcuts = new mouseShortcuts(video);
     const cap2vid = new capturecard2Video(video, videoSettings)
-    const sidebar = new sideBar(cap2vid)
+    const sidebar = new capturecard2VideoSidebar(cap2vid)
 
     document.body.addEventListener('mousedown', (e) => {
         mShortcuts.clicked(e, mShortcuts)
     });
 
-    var settingbar = document.createElement('div');
-    var hoverbar = document.createElement('div');
-    var devices = document.createElement('div');
-    var buttons = document.createElement('div');
-    var videobottom = document.createElement('div');
-    var wInEl = document.createElement('input');
-    var hInEl = document.createElement('input');
-    var fpsInEl = document.createElement('input');
-
-    settingbar.id = "settingbar";
-    hoverbar.id = "hoverbar";
-    devices.id = "devices";
-    buttons.id = "buttons";
-    video.id = "video";
-    videobottom.id = "videobottom";
-    wInEl.id = "wInEl";
-    hInEl.id = "hInEl";
-    fpsInEl.id = "fpsInEl";
-
-    document.body.appendChild(hoverbar);
-    document.body.appendChild(settingbar);
-    document.body.appendChild(video)
-    settingbar.appendChild(devices);
-    settingbar.appendChild(buttons);
-    settingbar.appendChild(videobottom);
-    videobottom.innerHTML = `
-    Width:<input id="wInEl">Height:<input id="hInEl">FPS:<input id="fpsInEl">
-    `
-    document.getElementById('wInEl').value = videoSettings.width;
-    document.getElementById('hInEl').value = videoSettings.height;
-    document.getElementById('fpsInEl').value = videoSettings.fps;
 
     // Input handlers
     var singleClick = function(e) {
@@ -116,52 +85,97 @@ function main(){
             openHelp();
         }
     }, false);              
-    function toggleMute(){
-        video.muted = !video.muted
+
+    // Starts the video
+    cap2vid.changeDevice()
+}
+
+class capturecard2VideoSidebar{
+    constructor(capturecard2Video){
+        this.cap2vid = capturecard2Video;
+
+        this.videobottom = document.createElement('div');
+        
+        this.widthElement = document.createElement('input');
+        this.widthElement.onchange = (object) => {
+            videoSettings.width = object.srcElement.value
+            cap2vid.changeDevice()
+        }
+        this.widthElement.value = this.cap2vid.videoProperties.width;
+        this.videobottom.appendChild(this.widthElement)
+        
+        this.heightElement = document.createElement('input');
+        this.heightElement.onchange = (object) => {
+            videoSettings.height = object.srcElement.value
+            cap2vid.changeDevice()
+        }
+        this.heightElement.value = this.cap2vid.videoProperties.height;
+        this.videobottom.appendChild(this.heightElement)
+
+        this.fpsElement = document.createElement('input');
+        this.fpsElement.onchange = (object) => {
+            videoSettings.fps = object.srcElement.value
+            cap2vid.changeDevice()
+        }
+        this.fpsElement.value = this.cap2vid.videoProperties.fps;
+        this.videobottom.appendChild(this.fpsElement)
+        
+
+        this.settingbar = document.createElement('div');
+        this.hoverbar = document.createElement('div');
+        this.devices = document.createElement('div');
+        this.buttons = document.createElement('div');
+       
+        this.helpElement = document.createElement('button');
+        this.muteElement = document.createElement('button');
+        this.refreshElement = document.createElement('button');
+        this.pipElement = document.createElement('button');
+
+        this.helpElement.onclick = this.openHelp;
+        this.muteElement.onclick = this.togglemute;
+        this.refreshElement.onclick = this.getDevices;
+        this.pipElement.onclick = this.cap2vid.video.requestPictureInPicture;
+
+        document.body.appendChild(this.hoverbar);
+        document.body.appendChild(this.settingbar);
+        this.settingbar.appendChild(this.devices);
+        this.settingbar.appendChild(this.buttons);
+        this.settingbar.appendChild(this.videobottom);
+ 
+        this.refreshDevices()
+    }
+    changeDeviceHandler(element,ms){
+        // ms is essentually self, come up with a better name
+        if(element.srcElement.getAttribute('videoDevice') == null){}else{
+            ms.cap2vid.videoProperties.deviceId.video = element.srcElement.getAttribute('videoDevice')
+        }
+        if(element.srcElement.getAttribute('audioDevice') == null){}else{
+            ms.cap2vid.videoProperties.deviceId.audio = element.srcElement.getAttribute('audioDevice')
+        }
+        ms.cap2vid.changeDevice()
+    }
+    toggleMute(){
+        this.cap2vid.video.muted = !this.cap2vid.video.muted
         if(video.muted == true){
             document.getElementById('mute').textContent = "Unmute (m)"
         }else{
             document.getElementById('mute').textContent = "Mute (m)"
         }
     }
-    document.getElementById('wInEl').onchange = (object) => {
-        videoSettings.width = object.srcElement.value
-        cap2vid.changeDevice()
-    }
-    document.getElementById('hInEl').onchange = (object) => {
-        videoSettings.height = object.srcElement.value
-        cap2vid.changeDevice()
-    }
-    document.getElementById('fpsInEl').onchange = (object) => {
-        videoSettings.fps = object.srcElement.value
-        cap2vid.changeDevice()
-    }
-    function changeDeviceHandler(element){
-        if(element.srcElement.getAttribute('videoDevice') == null){}else{
-            videoSettings.deviceId.video = element.srcElement.getAttribute('videoDevice')
-        }
-        if(element.srcElement.getAttribute('audioDevice') == null){}else{
-            videoSettings.deviceId.audio = element.srcElement.getAttribute('audioDevice')
-        }
-        cap2vid.changeDevice()
-    }
-    function getDevices(){
-        cap2vid.mediaDevices.enumerateDevices().then((mediaDevices) => {
-            devices.innerHTML = `
-            <button onclick=openHelp() >Getting started (?)</button>
-            <button id="mute" onclick=toggleMute() >Unmute (m)</button>
-            <button onclick=getDevices() >Refresh (r)</button>
-            <button onclick=video.requestPictureInPicture()> Picture in picture (p)</button>
-            <br>`;
-            d = {}
+    refreshDevices(){
+        this.cap2vid.mediaDevices.enumerateDevices().then((mediaDevices) => {
+            this.devices.innerHTML = `
+            `;
+            let d = {}
             mediaDevices.forEach(mediaDevice => {
+                let label = "";
                 if(mediaDevice.label == ""){
                   label = "Null/Default"
                 }else{
                   label = mediaDevice.label
                 }
                 if(mediaDevice.kind == 'videoinput') {
-                    if(typeof devices[mediaDevice.groupId] == "undefined"){
+                    if(typeof this.devices[mediaDevice.groupId] == "undefined"){
                         d[mediaDevice.groupId] = {
                             "label": label
                         }
@@ -169,7 +183,7 @@ function main(){
                     d[mediaDevice.groupId]["video"] = mediaDevice.deviceId
                 }
                 if(mediaDevice.kind == 'audioinput') {
-                    if(typeof devices[mediaDevice.groupId] == "undefined"){
+                    if(typeof this.devices[mediaDevice.groupId] == "undefined"){
                         d[mediaDevice.groupId] = {
                             "label": label
                         }
@@ -177,10 +191,10 @@ function main(){
                     d[mediaDevice.groupId]["audio"] = mediaDevice.deviceId
                 }
             });
-            for(e in d){
+            for(let e in d){
                 if(typeof d[e]["video"] == "string" || typeof d[e]["audio"] == "string"){
-                    a = document.createElement('button');
-                    iconhtml = ""
+                    let a = document.createElement('button');
+                    let iconhtml = ""
                     if(typeof d[e]["video"] == "string" && typeof d[e]["audio"] == "string"){
                         a.id = "vaButton";
                         iconhtml = iconhtml + `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-collection-play" viewBox="0 0 16 16"><path d="M2 3a.5.5 0 0 0 .5.5h11a.5.5 0 0 0 0-1h-11A.5.5 0 0 0 2 3zm2-2a.5.5 0 0 0 .5.5h7a.5.5 0 0 0 0-1h-7A.5.5 0 0 0 4 1zm2.765 5.576A.5.5 0 0 0 6 7v5a.5.5 0 0 0 .765.424l4-2.5a.5.5 0 0 0 0-.848l-4-2.5z"></path><path d="M1.5 14.5A1.5 1.5 0 0 1 0 13V6a1.5 1.5 0 0 1 1.5-1.5h13A1.5 1.5 0 0 1 16 6v7a1.5 1.5 0 0 1-1.5 1.5h-13zm13-1a.5.5 0 0 0 .5-.5V6a.5.5 0 0 0-.5-.5h-13A.5.5 0 0 0 1 6v7a.5.5 0 0 0 .5.5h13z"></path></svg>`
@@ -198,22 +212,14 @@ function main(){
                             a.setAttribute('audioDevice', d[e]["audio"])
                         }
                         a.innerHTML = iconhtml + d[e]["label"];
-                        a.onclick = changeDeviceHandler
-                        devices.appendChild(a);
+                        a.onclick = (e) => {
+                            this.changeDeviceHandler(e, this)
+                        }
+                        this.devices.appendChild(a);
                     }
                 }
             }
         });
-    }
-
-    // Starts the video
-    getDevices()
-    cap2vid.changeDevice()
-}
-
-class sideBar{
-    constructor(video, videoProperties){
-        
     }
 }
 class capturecard2Video{
