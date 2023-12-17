@@ -12,22 +12,18 @@ function main(){
     window.mShortcuts = new mouseShortcuts(video);
     window.cap2vid = new capturecard2Video(video, videoSettings)
     window.sidebar = new capturecard2VideoSidebar(cap2vid)
+    window.keybinds = new capturecard2VideoKeybinds(cap2vid)
 
-    document.body.addEventListener('mousedown', (e) => {
-        mShortcuts.clicked(e, mShortcuts)
-    });
+    // Starts the video
+    cap2vid.changeDevice()
+}
 
-
-    // Input handlers
-    var singleClick = function(e) {
-        if (document.pointerLockElement === document.body) {
-            document.exitPointerLock()
-        }else{
-            document.body.requestPointerLock()
-        }
+class capturecard2VideoKeybinds{
+    constructor(cap2vid){
+        this.cap2vid = cap2vid
+        window.addEventListener('keydown', function (e) {this.onkey(e, this)}, false);              
     }
-
-    function openHelp(){
+    openHelp(){
         alert(`Keybinds:
         ? or / : Show Help page
 
@@ -35,64 +31,37 @@ function main(){
         l : Lock/Hide mouse cursor (or single click video)
         m : Mutes and unmutes
 
-        c : change devices
         w : Set width
         h : Set height
         s : Set FPS
         `)
     }
-    window.addEventListener('keydown', function (e) {
+    onkey(ms, e){ 
         if(e.key == "f"){
             document.body.requestFullscreen();
         }
         if(e.key == "l"){
             document.body.requestPointerLock();
         }
-        if(e.key == "c"){
-            getDevices()
-            let arr = []
-            let finalstring = ""
-            for(let devi in d){
-                arr.push(d[devi])
-            }
-            for(let devi in arr){
-                finalstring += devi+": "+arr[devi].label+"\n";
-            }
-            a = arr[prompt("What device do you want to use?\n"+finalstring)]
-            console.log(a)
-            if(typeof a['video'] == 'string'){
-                videoSettings.deviceId.video = a['video']
-            }
-            if(typeof a['audio'] == 'string'){
-                videoSettings.deviceId.audio = a['audio']
-            }
-            cap2vid.changeDevice()
-        }
-            
+        // add changing devices later
         if(e.key == "w"){
-            videoSettings.width = prompt("What width do you want to set?", videoSettings.width);
+            ms.videoProperties.width = prompt("What width do you want to set?", videoSettings.width);
         }
         if(e.key == "h"){
-            videoSettings.height = prompt("What height do you want to set?", videoSettings.height);
+            ms.videoProperties.height = prompt("What height do you want to set?", videoSettings.height);
         }
         if(e.key == "s"){
-            videoSettings.fps = prompt("What FPS do you want to set?", videoSettings.fps);
+            ms.videoProperties.fps = prompt("What FPS do you want to set?", videoSettings.fps);
         }
-        if(e.key == "m"){
-            toggleMute();
-        }
+        // add toggle mute later
         if(e.key == "p"){
-            video.requestPictureInPicture();
+            ms.video.requestPictureInPicture();
         }
         if(e.key == "?" || e.key == "/"){
             openHelp();
         }
-    }, false);              
-
-    // Starts the video
-    cap2vid.changeDevice()
+    }
 }
-
 class capturecard2VideoSidebar{
     constructor(capturecard2Video){
         this.cap2vid = capturecard2Video;
@@ -228,6 +197,7 @@ class capturecard2VideoSidebar{
         });
     }
 }
+
 class capturecard2Video{
     constructor(video, videoProperties){
         this.video = video;
@@ -261,6 +231,7 @@ class capturecard2Video{
         }).catch(alert);
     }
 }
+
 class videoProperties{
     constructor(){
         this.width = 1280;
@@ -279,6 +250,9 @@ class mouseShortcuts{
         this.doubleClickTime = 250
         this.timer = false;
         this.videoElement = video;
+        document.body.addEventListener('mousedown', (e) => {
+            this.clicked(e, this)
+        });
     }
     singleClick(){
         if (document.pointerLockElement === document.body) {
