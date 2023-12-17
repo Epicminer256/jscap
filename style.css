@@ -28,7 +28,7 @@ html, body{
     z-index: 9;
 }
 #settingbar{
-    transition: left 1s;
+    transition: left .5s;
     background-color: rgba(100, 100, 100, 0.5);
     position: absolute;
     top:0;
