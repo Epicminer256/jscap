@@ -2,21 +2,22 @@ function main(){
     // Remove loading screen
     document.getElementById('waitjs').remove()
 
+    var video = document.createElement('video');
+    video.muted = true;
+    
     const videoSettings = new videoProperties();
-    const mShortcuts = new mouseShortcuts();
+    const mShortcuts = new mouseShortcuts(video);
+    const cap2vid = new capturecard2Video(video, videoSettings)
+    const sidebar = new sideBar(cap2vid)
 
     document.body.addEventListener('mousedown', (e) => {
         mShortcuts.clicked(e, mShortcuts)
     });
 
-    var mediaDevices = navigator.mediaDevices;
-
     var settingbar = document.createElement('div');
     var hoverbar = document.createElement('div');
     var devices = document.createElement('div');
     var buttons = document.createElement('div');
-    var video = document.createElement('video');
-    video.muted = true;
     var videobottom = document.createElement('div');
     var wInEl = document.createElement('input');
     var hInEl = document.createElement('input');
@@ -93,7 +94,7 @@ function main(){
             if(typeof a['audio'] == 'string'){
                 videoSettings.deviceId.audio = a['audio']
             }
-            updateVideo()
+            cap2vid.changeDevice()
         }
             
         if(e.key == "w"){
@@ -125,15 +126,15 @@ function main(){
     }
     document.getElementById('wInEl').onchange = (object) => {
         videoSettings.width = object.srcElement.value
-        updateVideo()
+        cap2vid.changeDevice()
     }
     document.getElementById('hInEl').onchange = (object) => {
         videoSettings.height = object.srcElement.value
-        updateVideo()
+        cap2vid.changeDevice()
     }
     document.getElementById('fpsInEl').onchange = (object) => {
         videoSettings.fps = object.srcElement.value
-        updateVideo()
+        cap2vid.changeDevice()
     }
     function changeDeviceHandler(element){
         if(element.srcElement.getAttribute('videoDevice') == null){}else{
@@ -142,37 +143,10 @@ function main(){
         if(element.srcElement.getAttribute('audioDevice') == null){}else{
             videoSettings.deviceId.audio = element.srcElement.getAttribute('audioDevice')
         }
-        updateVideo()
-    }
-    function updateVideo(){
-        constraints = {
-            video: {
-              width: videoSettings.width,
-              height: videoSettings.height,
-              frameRate: videoSettings.fps
-            },
-            audio: {
-                echoCancellation: false,
-                autoGainControl: false,
-                noiseSuppression: false,
-            }
-        }
-        if(typeof videoSettings.deviceId.video == "string"){
-            constraints.video.deviceId = videoSettings.deviceId.video
-        }
-        if(typeof videoSettings.deviceId.audio == "string"){
-            constraints.audio.deviceId = videoSettings.deviceId.audio
-        }
-        mediaDevices.getUserMedia(constraints).then((stream) => {
-            video.srcObject = stream;
-            video.addEventListener("loadedmetadata", () => {
-                video.play();
-            });
-        }).catch(alert);
-      
+        cap2vid.changeDevice()
     }
     function getDevices(){
-        mediaDevices.enumerateDevices().then((mediaDevices) => {
+        cap2vid.mediaDevices.enumerateDevices().then((mediaDevices) => {
             devices.innerHTML = `
             <button onclick=openHelp() >Getting started (?)</button>
             <button id="mute" onclick=toggleMute() >Unmute (m)</button>
@@ -234,9 +208,47 @@ function main(){
 
     // Starts the video
     getDevices()
-    updateVideo()
+    cap2vid.changeDevice()
 }
 
+class sideBar{
+    constructor(video, videoProperties){
+        
+    }
+}
+class capturecard2Video{
+    constructor(video, videoProperties){
+        this.video = video;
+        this.videoProperties = videoProperties;
+        this.mediaDevices = navigator.mediaDevices;
+    }
+    changeDevice(){
+        let constraints = {
+            video: {
+              width: this.videoProperties.width,
+              height: this.videoProperties.height,
+              frameRate: this.videoProperties.fps
+            },
+            audio: {
+                echoCancellation: false,
+                autoGainControl: false,
+                noiseSuppression: false,
+            }
+        }
+        if(typeof this.videoProperties.deviceId.video == "string"){
+            constraints.video.deviceId = this.videoProperties.deviceId.video
+        }
+        if(typeof this.videoProperties.deviceId.audio == "string"){
+            constraints.audio.deviceId = this.videoProperties.deviceId.audio
+        }
+        this.mediaDevices.getUserMedia(constraints).then((stream) => {
+            this.video.srcObject = stream;
+            this.video.addEventListener("loadedmetadata", () => {
+                this.video.play();
+            });
+        }).catch(alert);
+    }
+}
 class videoProperties{
     constructor(){
         this.width = 1280;
@@ -250,10 +262,11 @@ class videoProperties{
 }
 
 class mouseShortcuts{
-    constructor(){
+    constructor(video){
         this.clicks = 0;
         this.doubleClickTime = 250
         this.timer = false;
+        this.videoElement = video;
     }
     singleClick(){
         if (document.pointerLockElement === document.body) {
@@ -282,8 +295,9 @@ class mouseShortcuts{
         }
     }
     clicked(e, ms){
-        // Replace srcElement
-        if(e.target == document.querySelector('video') || document.pointerLockElement === document.body){
+        // ms is essentually just the "self" variable
+        // remove this comment later when a better var name is made
+        if(e.target == ms.videoElement || document.pointerLockElement === document.body){
             clearTimeout(ms.timer);
             ms.clicks++;
             ms.timer = setTimeout(function() {
