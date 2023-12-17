@@ -6,6 +6,7 @@ function main(){
     video.muted = true;
     
     video.id = "video"
+    document.body.appendChild(video)
 
     window.videoSettings = new videoProperties();
     window.mShortcuts = new mouseShortcuts(video);
