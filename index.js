@@ -21,7 +21,7 @@ function main(){
 class capturecard2VideoKeybinds{
     constructor(cap2vid){
         this.cap2vid = cap2vid
-        window.addEventListener('keydown', function (e) {this.onkey(e, this)}, false);              
+        window.addEventListener('keydown', this.onkey.bind(this));              
     }
     openHelp(){
         alert(`Keybinds:
@@ -36,7 +36,7 @@ class capturecard2VideoKeybinds{
         s : Set FPS
         `)
     }
-    onkey(ms, e){ 
+    onkey(e){ 
         if(e.key == "f"){
             document.body.requestFullscreen();
         }
@@ -250,11 +250,10 @@ class mouseShortcuts{
         this.doubleClickTime = 250
         this.timer = false;
         this.videoElement = video;
-        document.body.addEventListener('mousedown', (e) => {
-            this.clicked(e, this)
-        });
+        document.body.addEventListener('mousedown', this.clicked.bind(this));
     }
     singleClick(){
+        console.log('s')
         if (document.pointerLockElement === document.body) {
             document.exitPointerLock()
         }else{
@@ -262,6 +261,7 @@ class mouseShortcuts{
         }
     }
     doubleClick(){
+        console.log('d')
         if (!document.fullscreenElement && !document.mozFullScreenElement && !document.webkitFullscreenElement) {
             if (document.documentElement.requestFullscreen) {
                 document.documentElement.requestFullscreen();
@@ -280,17 +280,15 @@ class mouseShortcuts{
             }
         }
     }
-    clicked(e, ms){
-        // ms is essentually just the "self" variable
-        // remove this comment later when a better var name is made
-        if(e.target == ms.videoElement || document.pointerLockElement === document.body){
-            clearTimeout(ms.timer);
-            ms.clicks++;
-            ms.timer = setTimeout(function() {
-                if(ms.clicks==1) ms.singleClick(e);
-                if(ms.clicks==2) ms.doubleClick(e);
-                ms.clicks = 0;
-            }, ms.doubleClickTime);
+    handleClickCount(){
+        if(this.clicks==1) this.singleClick();
+        if(this.clicks==2) this.doubleClick();
+        this.clicks = 0;
+    }
+    clicked(e){
+        if(e.target == this.videoElement || document.pointerLockElement === document.body){
+            this.clicks++;
+            this.timer = setTimeout(this.handleClickCount.bind(this), this.doubleClickTime);
         }
     }
 }
