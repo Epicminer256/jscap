@@ -43,7 +43,7 @@ html, body{
 #settingbar:hover {
     left:0;
 }
-#video{
+video{
     position: absolute;
     top:0;
     left:0;

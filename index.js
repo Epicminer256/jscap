@@ -5,7 +5,6 @@ function main(){
     var video = document.createElement('video');
     video.muted = true;
     
-    video.id = "video"
     document.body.appendChild(video)
 
     window.videoSettings = new videoProperties();
@@ -58,7 +57,7 @@ class capturecard2VideoKeybinds{
             ms.video.requestPictureInPicture();
         }
         if(e.key == "?" || e.key == "/"){
-            openHelp();
+            this.openHelp();
         }
     }
 }
