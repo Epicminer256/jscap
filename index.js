@@ -81,7 +81,7 @@ class capturecard2VideoSidebar{
         this.pipElement = document.createElement('button');
 
         this.helpElement.onclick = this.openHelp;
-        this.muteElement.onclick = this.togglemute;
+        this.muteElement.onclick = this.toggleMute;
         this.refreshElement.onclick = this.getDevices;
         this.pipElement.onclick = this.cap2vid.video.requestPictureInPicture;
 
@@ -106,7 +106,7 @@ class capturecard2VideoSidebar{
     }
     toggleMute(){
         this.cap2vid.video.muted = !this.cap2vid.video.muted
-        if(video.muted == true){
+        if(this.cap2vid.video.muted == true){
             this.muteButton.textContent = "Unmute (m)"
         }else{
             this.muteButton.textContent = "Mute (m)"
