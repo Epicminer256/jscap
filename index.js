@@ -6,14 +6,15 @@ function main(){
     video.muted = true;
     
     document.body.appendChild(video)
+
     let introText = document.createElement('p');
     introText.classList.add("centerscreen")
     introText.textContent = "Hover the left side to open menu"
     document.body.appendChild(introText) 
     function removeIntro(){
         introText.remove()
-	document.body.removeEventListener("mousedown", removeIntro, false);
-	document.body.removeEventListener("keydown", removeIntro, false);
+        document.body.removeEventListener("mousedown", removeIntro, false);
+        document.body.removeEventListener("keydown", removeIntro, false);
     }
     document.body.addEventListener("mousedown", removeIntro, true)
     document.body.addEventListener("keydown", removeIntro, true)
@@ -23,68 +24,25 @@ function main(){
     window.mShortcuts = new mouseShortcuts(video);
     window.cap2vid = new capturecard2Video(video, videoSettings)
     window.sidebar = new capturecard2VideoSidebar(cap2vid)
-    window.keybinds = new capturecard2VideoKeybinds(cap2vid)
 
     // Starts the video
     cap2vid.changeDevice()
 }
 
-class capturecard2VideoKeybinds{
-    constructor(cap2vid){
-        this.cap2vid = cap2vid
-        window.addEventListener('keydown', this.onkey.bind(this));
-    }
-    openHelp(){
-        alert(`Keybinds:
-        ? or / : Show Help page
-
-        f : Fullscreen (or double click video)
-        l : Lock/Hide mouse cursor (or single click video)
-        m : Mutes and unmutes
-	p : Request Picture in Picture
-
-        w : Set width
-        h : Set height
-        s : Set FPS
-        `)
-    }
-    onkey(e){ 
-        if(e.key == "f"){
-            document.body.requestFullscreen();
-        }
-        if(e.key == "l"){
-            document.body.requestPointerLock();
-        }
-        // add changing devices later
-        if(e.key == "w"){
-            this.videoProperties.width = prompt("What width do you want to set?", videoSettings.width);
-        }
-        if(e.key == "h"){
-            this.videoProperties.height = prompt("What height do you want to set?", videoSettings.height);
-        }
-        if(e.key == "s"){
-            this.videoProperties.fps = prompt("What FPS do you want to set?", videoSettings.fps);
-        }
-        // add toggle mute later
-        if(e.key == "p"){
-            this.cap2vid.video.requestPictureInPicture();
-        }
-        if(e.key == "?" || e.key == "/"){
-            this.openHelp();
-        }
-    }
-}
 class capturecard2VideoSidebar{
     constructor(capturecard2Video){
         this.cap2vid = capturecard2Video;
+        window.addEventListener('keydown', this.onkey.bind(this));
+        setInterval(this.refreshDevices.bind(this), 1000)
 
         this.videobottom = document.createElement('div');
 
         this.muteButton = document.createElement('button');
         this.muteButton.textContent = 'Unmute (m)';
         this.muteButton.onclick = this.toggleMute.bind(this);
+        this.videobottom.id = "videobottom"
         this.videobottom.appendChild(this.muteButton);
-        
+
         this.widthElement = document.createElement('input');
         this.widthElement.onchange = (object) => {
             videoSettings.width = object.srcElement.value
@@ -108,7 +66,6 @@ class capturecard2VideoSidebar{
         }
         this.fpsElement.value = this.cap2vid.videoProperties.fps;
         this.videobottom.appendChild(this.fpsElement)
-        this.videobottom.id = "videobottom"
 
         this.settingbar = document.createElement('div');
         this.settingbar.id = "settingbar"
@@ -136,7 +93,6 @@ class capturecard2VideoSidebar{
  
         this.refreshDevices()
 	
-	setInterval(this.refreshDevices.bind(this), 1000)
     }
     changeDeviceHandler(element,ms){
         // ms is essentually self, come up with a better name
@@ -223,6 +179,49 @@ class capturecard2VideoSidebar{
                 }
             }
         });
+    }
+
+    openHelp(){
+        alert(`Keybinds:
+        ? or / : Show Help page
+
+        f : Fullscreen (or double click video)
+        l : Lock/Hide mouse cursor (or single click video)
+        m : Mutes and unmutes
+	p : Request Picture in Picture
+
+        w : Set width
+        h : Set height
+        s : Set FPS
+        `)
+    }
+    onkey(e){ 
+        if(e.key == "f"){
+            document.body.requestFullscreen();
+        }
+        if(e.key == "l"){
+            document.body.requestPointerLock();
+        }
+        // add changing devices later
+        if(e.key == "w"){
+            this.videoProperties.width = prompt("What width do you want to set?", videoSettings.width);
+        }
+        if(e.key == "h"){
+            this.videoProperties.height = prompt("What height do you want to set?", videoSettings.height);
+        }
+        if(e.key == "s"){
+            this.videoProperties.fps = prompt("What FPS do you want to set?", videoSettings.fps);
+        }
+        // add toggle mute later
+        if(e.key == "p"){
+            this.cap2vid.video.requestPictureInPicture();
+        }
+        if(e.key == "?" || e.key == "/"){
+            this.openHelp();
+        }
+        if(e.key == "m"){
+            this.toggleMute();
+        }
     }
 }
 
