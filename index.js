@@ -136,7 +136,7 @@ class capturecard2VideoSidebar{
  
         this.refreshDevices()
 	
-	setInterval(this.refreshDevices.bind(this), 2000)
+	setInterval(this.refreshDevices.bind(this), 1000)
     }
     changeDeviceHandler(element,ms){
         // ms is essentually self, come up with a better name
@@ -197,18 +197,18 @@ class capturecard2VideoSidebar{
                     }else{
                         if(typeof d[e]["video"] == "string"){
                             a.id = "videoButton";
-                            iconhtml = iconhtml + `<svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 0 24 24" width="20"><path d="M0 0h24v24H0z" fill="none"></path><path fill="white" d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"></path></svg>`
+                            iconhtml = iconhtml + `<i class="bi bi-camera-video"></i>`
                             a.setAttribute('videoDevice', d[e]["video"])
                             if(d[e]['video'] == this.cap2vid.videoProperties.deviceId.video){
-                                iconhtml = iconhtml + "(selected)";
+                                iconhtml = '<i class="bi bi-camera-video-fill"></i>';
 			    }
                         }
                         if(typeof d[e]["audio"] == "string"){
                             a.id = "audioButton";
-                            iconhtml = iconhtml + `<svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 0 24 24" width="20"><path d="M0 0h24v24H0z" fill="none"/><path fill="white" d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>`
+                            iconhtml = iconhtml + `<i class="bi bi-speaker"></i>`
                             a.setAttribute('audioDevice', d[e]["audio"])
 				if(d[e]['audio'] == this.cap2vid.videoProperties.deviceId.audio){
-                                iconhtml = iconhtml + "(selected)";
+                                iconhtml = '<i class="bi bi-speaker-fill"></i>';
 			    }
                         }
                         a.innerHTML = iconhtml + d[e]["label"];
