@@ -6,7 +6,19 @@ function main(){
     video.muted = true;
     
     document.body.appendChild(video)
-
+    let introText = document.createElement('p');
+    introText.classList.add("centerscreen")
+    introText.textContent = "Hover the left side to open menu"
+    document.body.appendChild(introText) 
+    function removeIntro(){
+        introText.remove()
+	document.body.removeEventListener("mousedown", removeIntro, false);
+	document.body.removeEventListener("keydown", removeIntro, false);
+    }
+    document.body.addEventListener("mousedown", removeIntro, true)
+    document.body.addEventListener("keydown", removeIntro, true)
+    setTimeout(removeIntro, 5000)
+    
     window.videoSettings = new videoProperties();
     window.mShortcuts = new mouseShortcuts(video);
     window.cap2vid = new capturecard2Video(video, videoSettings)
@@ -20,7 +32,7 @@ function main(){
 class capturecard2VideoKeybinds{
     constructor(cap2vid){
         this.cap2vid = cap2vid
-        window.addEventListener('keydown', this.onkey.bind(this));              
+        window.addEventListener('keydown', this.onkey.bind(this));
     }
     openHelp(){
         alert(`Keybinds:
@@ -29,6 +41,7 @@ class capturecard2VideoKeybinds{
         f : Fullscreen (or double click video)
         l : Lock/Hide mouse cursor (or single click video)
         m : Mutes and unmutes
+	p : Request Picture in Picture
 
         w : Set width
         h : Set height
@@ -44,17 +57,17 @@ class capturecard2VideoKeybinds{
         }
         // add changing devices later
         if(e.key == "w"){
-            ms.videoProperties.width = prompt("What width do you want to set?", videoSettings.width);
+            this.videoProperties.width = prompt("What width do you want to set?", videoSettings.width);
         }
         if(e.key == "h"){
-            ms.videoProperties.height = prompt("What height do you want to set?", videoSettings.height);
+            this.videoProperties.height = prompt("What height do you want to set?", videoSettings.height);
         }
         if(e.key == "s"){
-            ms.videoProperties.fps = prompt("What FPS do you want to set?", videoSettings.fps);
+            this.videoProperties.fps = prompt("What FPS do you want to set?", videoSettings.fps);
         }
         // add toggle mute later
         if(e.key == "p"){
-            ms.video.requestPictureInPicture();
+            this.cap2vid.video.requestPictureInPicture();
         }
         if(e.key == "?" || e.key == "/"){
             this.openHelp();
@@ -122,6 +135,8 @@ class capturecard2VideoSidebar{
         this.settingbar.appendChild(this.videobottom);
  
         this.refreshDevices()
+	
+	setInterval(this.refreshDevices.bind(this), 2000)
     }
     changeDeviceHandler(element,ms){
         // ms is essentually self, come up with a better name
@@ -181,14 +196,21 @@ class capturecard2VideoSidebar{
                         a.setAttribute('audioDevice', d[e]["audio"])
                     }else{
                         if(typeof d[e]["video"] == "string"){
+                            console.log(d[e]['video'])
                             a.id = "videoButton";
                             iconhtml = iconhtml + `<svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 0 24 24" width="20"><path d="M0 0h24v24H0z" fill="none"></path><path fill="white" d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"></path></svg>`
                             a.setAttribute('videoDevice', d[e]["video"])
+                            if(d[e]['video'] == this.cap2vid.videoProperties.deviceId.video){
+                                iconhtml = iconhtml + "(selected)";
+			    }
                         }
                         if(typeof d[e]["audio"] == "string"){
                             a.id = "audioButton";
                             iconhtml = iconhtml + `<svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 0 24 24" width="20"><path d="M0 0h24v24H0z" fill="none"/><path fill="white" d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>`
                             a.setAttribute('audioDevice', d[e]["audio"])
+				if(d[e]['audio'] == this.cap2vid.videoProperties.deviceId.audio){
+                                iconhtml = iconhtml + "(selected)";
+			    }
                         }
                         a.innerHTML = iconhtml + d[e]["label"];
                         a.onclick = (e) => {
