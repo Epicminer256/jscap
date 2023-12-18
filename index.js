@@ -67,6 +67,11 @@ class capturecard2VideoSidebar{
         this.cap2vid = capturecard2Video;
 
         this.videobottom = document.createElement('div');
+
+        this.muteButton = document.createElement('button');
+        this.muteButton.textContent = 'Unmute (m)';
+        this.muteButton.onclick = this.toggleMute.bind(this);
+        this.videobottom.appendChild(this.muteButton);
         
         this.widthElement = document.createElement('input');
         this.widthElement.onchange = (object) => {
@@ -132,9 +137,9 @@ class capturecard2VideoSidebar{
     toggleMute(){
         this.cap2vid.video.muted = !this.cap2vid.video.muted
         if(video.muted == true){
-            document.getElementById('mute').textContent = "Unmute (m)"
+            this.muteButton.textContent = "Unmute (m)"
         }else{
-            document.getElementById('mute').textContent = "Mute (m)"
+            this.muteButton.textContent = "Mute (m)"
         }
     }
     refreshDevices(){
@@ -253,7 +258,6 @@ class mouseShortcuts{
         document.body.addEventListener('mousedown', this.clicked.bind(this));
     }
     singleClick(){
-        console.log('s')
         if (document.pointerLockElement === document.body) {
             document.exitPointerLock()
         }else{
@@ -261,7 +265,6 @@ class mouseShortcuts{
         }
     }
     doubleClick(){
-        console.log('d')
         if (!document.fullscreenElement && !document.mozFullScreenElement && !document.webkitFullscreenElement) {
             if (document.documentElement.requestFullscreen) {
                 document.documentElement.requestFullscreen();
