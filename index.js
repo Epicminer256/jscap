@@ -35,13 +35,21 @@ class capturecard2VideoSidebar{
         window.addEventListener('keydown', this.onkey.bind(this));
         setInterval(this.refreshDevices.bind(this), 1000)
 
+        this.settingbar = document.createElement('div');
+        this.settingbar.id = "settingbar"
+
         this.videobottom = document.createElement('div');
+        this.videobottom.id = "videobottom"
+        this.settingbar.appendChild(this.videobottom);
+
+        this.videobottomother = document.createElement('div');
+        this.videobottomother.id = "videobottomother";
+        this.settingbar.appendChild(this.videobottomother);
 
         this.muteButton = document.createElement('button');
         this.muteButton.textContent = 'Unmute (m)';
         this.muteButton.onclick = this.toggleMute.bind(this);
-        this.videobottom.id = "videobottom"
-        this.videobottom.appendChild(this.muteButton);
+        this.videobottomother.appendChild(this.muteButton);
 
         this.widthElement = document.createElement('input');
         this.widthElement.onchange = (object) => {
@@ -58,6 +66,13 @@ class capturecard2VideoSidebar{
         }
         this.heightElement.value = this.cap2vid.videoProperties.height;
         this.videobottom.appendChild(this.heightElement)
+        
+        this.hoverbar = document.createElement('div');
+        this.hoverbar.id = "hoverbar"
+        
+        this.devices = document.createElement('div');
+        this.devices.id = "devices"
+        this.settingbar.appendChild(this.devices);
 
         this.fpsElement = document.createElement('input');
         this.fpsElement.onchange = (object) => {
@@ -67,29 +82,22 @@ class capturecard2VideoSidebar{
         this.fpsElement.value = this.cap2vid.videoProperties.fps;
         this.videobottom.appendChild(this.fpsElement)
 
-        this.settingbar = document.createElement('div');
-        this.settingbar.id = "settingbar"
-        this.hoverbar = document.createElement('div');
-        this.hoverbar.id = "hoverbar"
-        this.devices = document.createElement('div');
-        this.devices.id = "devices"
-        this.buttons = document.createElement('div');
-       
         this.helpElement = document.createElement('button');
-        this.muteElement = document.createElement('button');
-        this.refreshElement = document.createElement('button');
-        this.pipElement = document.createElement('button');
-
         this.helpElement.onclick = this.openHelp;
-        this.muteElement.onclick = this.toggleMute;
-        this.refreshElement.onclick = this.getDevices;
+        this.helpElement.textContent = "Help (?)";
+        this.videobottomother.appendChild(this.helpElement)
+
+        this.refreshElement = document.createElement('button');
+
+        this.pipElement = document.createElement('button');
         this.pipElement.onclick = this.cap2vid.video.requestPictureInPicture;
+        this.pipElement.textContent = "Picture in Picture (p)"
+        this.videobottomother.appendChild(this.pipElement);
+        
+        this.refreshElement.onclick = this.getDevices;
 
         document.body.appendChild(this.hoverbar);
         document.body.appendChild(this.settingbar);
-        this.settingbar.appendChild(this.devices);
-        this.settingbar.appendChild(this.buttons);
-        this.settingbar.appendChild(this.videobottom);
  
         this.refreshDevices()
 	
@@ -183,13 +191,15 @@ class capturecard2VideoSidebar{
 
     openHelp(){
         alert(`Keybinds:
-        ? or / : Show Help page
-
+        -- Best for efficency
         f : Fullscreen (or double click video)
         l : Lock/Hide mouse cursor (or single click video)
         m : Mutes and unmutes
-	p : Request Picture in Picture
+        c : Changes device
+        p : Request Picture in Picture
 
+        -- Other
+        ? or / : Show Help page
         w : Set width
         h : Set height
         s : Set FPS
@@ -204,16 +214,16 @@ class capturecard2VideoSidebar{
         }
         // add changing devices later
         if(e.key == "w"){
-            this.videoProperties.width = prompt("What width do you want to set?", videoSettings.width);
+            this.cap2vid.videoProperties.width = prompt("What width do you want to set?", this.cap2vid.videoProperties.width);
         }
         if(e.key == "h"){
-            this.videoProperties.height = prompt("What height do you want to set?", videoSettings.height);
+            this.cap2vid.videoProperties.height = prompt("What height do you want to set?", this.cap2vid.videoProperties.height);
         }
         if(e.key == "s"){
-            this.videoProperties.fps = prompt("What FPS do you want to set?", videoSettings.fps);
+            this.cap2vid.videoProperties.fps = prompt("What FPS do you want to set?", this.cap2vid.videoProperties.fps);
         }
-        // add toggle mute later
         if(e.key == "p"){
+            console.log("PiP is not a avaliable function on firefox, so yeah.")
             this.cap2vid.video.requestPictureInPicture();
         }
         if(e.key == "?" || e.key == "/"){
@@ -221,6 +231,56 @@ class capturecard2VideoSidebar{
         }
         if(e.key == "m"){
             this.toggleMute();
+        }
+        if(e.key == "c"){
+            this.refreshDevices()
+            let arr = []
+            let d = {}
+            let finalstring = ""
+
+            this.cap2vid.mediaDevices.enumerateDevices().then((mediaDevices) => {
+                let d = {}
+                mediaDevices.forEach(mediaDevice => {
+                    let label = "";
+                    if(mediaDevice.label == ""){
+                      label = "Null/Default"
+                    }else{
+                      label = mediaDevice.label
+                    }
+                    if(mediaDevice.kind == 'videoinput') {
+                        if(typeof this.devices[mediaDevice.groupId] == "undefined"){
+                            d[mediaDevice.groupId] = {
+                                "label": label
+                            }
+                        }
+                        d[mediaDevice.groupId]["video"] = mediaDevice.deviceId
+                    }
+                    if(mediaDevice.kind == 'audioinput') {
+                        if(typeof this.devices[mediaDevice.groupId] == "undefined"){
+                            d[mediaDevice.groupId] = {
+                                "label": label
+                            }
+                        }
+                        d[mediaDevice.groupId]["audio"] = mediaDevice.deviceId
+                    }
+                });
+            });
+            if(arr.length == 0){
+                alert("No devices found!")
+                return
+            }
+            for(let devi in arr){
+                finalstring += devi+": "+arr[devi].label+"\n";
+            }
+            let a = arr[prompt("What device do you want to use?\n"+finalstring)]
+            console.log(a)
+            if(typeof a['video'] == 'string'){
+                videoDeviceID = a['video']
+            }
+            if(typeof a['audio'] == 'string'){
+                audioDeviceID = a['audio']
+            }
+            this.cap2vid.changeDevice()
         }
     }
 }
@@ -234,8 +294,14 @@ class capturecard2Video{
     changeDevice(){
         let constraints = {
             video: {
-              width: this.videoProperties.width,
-              height: this.videoProperties.height,
+              width: {
+                  min: this.videoProperties.width,
+                  max: this.videoProperties.width,
+              },
+              height: {
+                  min: this.videoProperties.height,
+                  max: this.videoProperties.height,
+              },
               frameRate: this.videoProperties.fps
             },
             audio: {
