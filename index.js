@@ -265,23 +265,23 @@ class capturecard2VideoSidebar{
                         d[mediaDevice.groupId]["audio"] = mediaDevice.deviceId
                     }
                 });
+                if(arr.length == 0){
+                    alert("No devices found!")
+                    return
+                }
+                for(let devi in arr){
+                    finalstring += devi+": "+arr[devi].label+"\n";
+                }
+                let a = arr[prompt("What device do you want to use?\n"+finalstring)]
+                console.log(a)
+                if(typeof a['video'] == 'string'){
+                    videoDeviceID = a['video']
+                }
+                if(typeof a['audio'] == 'string'){
+                    audioDeviceID = a['audio']
+                }
+                this.cap2vid.changeDevice()
             });
-            if(arr.length == 0){
-                alert("No devices found!")
-                return
-            }
-            for(let devi in arr){
-                finalstring += devi+": "+arr[devi].label+"\n";
-            }
-            let a = arr[prompt("What device do you want to use?\n"+finalstring)]
-            console.log(a)
-            if(typeof a['video'] == 'string'){
-                videoDeviceID = a['video']
-            }
-            if(typeof a['audio'] == 'string'){
-                audioDeviceID = a['audio']
-            }
-            this.cap2vid.changeDevice()
         }
     }
 }
