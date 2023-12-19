@@ -9,6 +9,7 @@ function main(){
 
     let introText = document.createElement('p');
     introText.classList.add("centerscreen")
+    introText.id = "introText"
     introText.textContent = "Hover the left side to open menu"
     document.body.appendChild(introText) 
     function removeIntro(){
