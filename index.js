@@ -53,26 +53,16 @@ class capturecard2VideoSidebar{
 
         this.widthElement = document.createElement('input');
         this.widthElement.onchange = (object) => {
-<<<<<<< Updated upstream
-            videoSettings.width = object.srcElement.value
-            cap2vid.changeDevice()
-=======
             this.videoSettings.width = object.srcElement.value
-            this.cap2vid.changeDevice()
->>>>>>> Stashed changes
+            cap2vid.changeDevice()
         }
         this.widthElement.value = this.cap2vid.videoProperties.width;
         this.videobottom.appendChild(this.widthElement)
         
         this.heightElement = document.createElement('input');
         this.heightElement.onchange = (object) => {
-<<<<<<< Updated upstream
             videoSettings.height = object.srcElement.value
             cap2vid.changeDevice()
-=======
-            this.videoSettings.height = object.srcElement.value
-            this.cap2vid.changeDevice()
->>>>>>> Stashed changes
         }
         this.heightElement.value = this.cap2vid.videoProperties.height;
         this.videobottom.appendChild(this.heightElement)
@@ -86,13 +76,8 @@ class capturecard2VideoSidebar{
 
         this.fpsElement = document.createElement('input');
         this.fpsElement.onchange = (object) => {
-<<<<<<< Updated upstream
             videoSettings.fps = object.srcElement.value
             cap2vid.changeDevice()
-=======
-            this.videoSettings.fps = object.srcElement.value
-            this.cap2vid.changeDevice()
->>>>>>> Stashed changes
         }
         this.fpsElement.value = this.cap2vid.videoProperties.fps;
         this.videobottom.appendChild(this.fpsElement)
@@ -105,14 +90,7 @@ class capturecard2VideoSidebar{
         this.refreshElement = document.createElement('button');
 
         this.pipElement = document.createElement('button');
-<<<<<<< Updated upstream
         this.pipElement.onclick = this.cap2vid.video.requestPictureInPicture;
-=======
-        function pipEn = () {
-            this.cap2vid.video.requestPictureInPicture()
-        }
-        this.pipElement.onclick = pipEn.bind(this);
->>>>>>> Stashed changes
         this.pipElement.textContent = "Picture in Picture (p)"
         this.videobottomother.appendChild(this.pipElement);
         
