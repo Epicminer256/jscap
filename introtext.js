@@ -3,7 +3,9 @@ class IntroText{
 		this.introText = document.createElement('p');
 		this.introText.classList.add("centerscreen")
 		this.introText.id = "introText"
-		this.introText.textContent = "Hover the left side to open menu"
+		this.introText.style.whiteSpace = "pre"
+		this.introText.style.textAlign = "center"
+		this.introText.textContent = "Hover the left side to open menu\n(Or use \"?\" for keybinds)"
 
 		document.body.appendChild(this.introText) 
 

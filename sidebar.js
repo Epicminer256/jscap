@@ -164,22 +164,25 @@ class capturecard2VideoSidebar{
 			}
 		});
 	}
-
+	// This is a programming warcrime
 	openHelp(){
-		alert(`Keybinds:
-		-- Best for efficency
-		f : Fullscreen (or double click video)
-		l : Lock/Hide mouse cursor (or single click video)
-		m : Mutes and unmutes
-		c : Changes device
-		p : Request Picture in Picture
-
-		-- Other
-		? or / : Show Help page
-		w : Set width
-		h : Set height
-		s : Set FPS
-		`)
+		let helpstring = `Keybinds:
+-- Best for efficency
+f : Fullscreen (or double click video)
+l : Lock/Hide mouse cursor (or single click video)
+m : Mutes and unmutes
+c : Changes device`
+		if(this.cap2vid.video.requestPictureInPicture){
+			helpstring+=`
+p : Request Picture in Picture`
+		}
+		helpstring+=`
+-- Other
+? or / : Show Help page
+w : Set width
+h : Set height
+s : Set FPS`
+		alert(helpstring)
 	}
 	onkey(e){ 
 		if(e.key == "f"){
