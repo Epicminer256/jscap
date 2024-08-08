@@ -5,7 +5,7 @@ video.muted = true;
 
 document.body.appendChild(video)
 
-
+window.introtext = new IntroText();
 window.videoSettings = new videoProperties();
 window.mShortcuts = new mouseShortcuts(video);
 window.cap2vid = new capturecard2Video(video, videoSettings)

@@ -1,20 +1,23 @@
 class IntroText{
-	contructor(){
-		self.introText = document.createElement('p');
-		self.introText.classList.add("centerscreen")
-		self.introText.id = "introText"
-		self.introText.textContent = "Hover the left side to open menu"
-		document.body.appendChild(introText) 
+	constructor(){
+		this.introText = document.createElement('p');
+		this.introText.classList.add("centerscreen")
+		this.introText.id = "introText"
+		this.introText.textContent = "Hover the left side to open menu"
 
+		document.body.appendChild(this.introText) 
 
-		document.body.addEventListener("mousedown", removeIntro, true)
-		document.body.addEventListener("keydown", removeIntro, true)
-		setTimeout(self.removeIntro, 5000)
+		// Thanks Javascript, I have to mention what "this" means with whatever this means
+		this.removeIntro = this.removeIntro.bind(this)
+
+		document.body.addEventListener("mousedown", this.removeIntro, true)
+		document.body.addEventListener("keydown", this.removeIntro, true)
+		setTimeout(this.removeIntro, 5000)
 	}
 
 	removeIntro(){
-		self.introText.remove()
-		document.body.removeEventListener("mousedown", removeIntro, false);
-		document.body.removeEventListener("keydown", removeIntro, false);
+		this.introText.remove()
+		document.body.removeEventListener("mousedown", this.removeIntro, false);
+		document.body.removeEventListener("keydown", this.removeIntro, false);
 	}
 }

@@ -55,15 +55,17 @@ class capturecard2VideoSidebar{
 
 		this.helpElement = document.createElement('button');
 		this.helpElement.onclick = this.openHelp;
-		this.helpElement.textContent = "Help (?)";
+		this.helpElement.textContent = "Binds (?)";
 		this.videobottomother.appendChild(this.helpElement)
 
 		this.refreshElement = document.createElement('button');
 
-		this.pipElement = document.createElement('button');
-		this.pipElement.onclick = this.cap2vid.video.requestPictureInPicture;
-		this.pipElement.textContent = "Picture in Picture (p)"
-		this.videobottomother.appendChild(this.pipElement);
+		if(this.cap2vid.video.requestPictureInPicture){
+			this.pipElement = document.createElement('button');
+			this.pipElement.onclick = this.cap2vid.video.requestPictureInPicture;
+			this.pipElement.textContent = "Picture in Picture (p)"
+			this.videobottomother.appendChild(this.pipElement);
+		}
 
 		this.refreshElement.onclick = this.getDevices;
 
